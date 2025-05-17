@@ -1,0 +1,1 @@
+module.exports = "CLE_SECRET_TOKEN";
