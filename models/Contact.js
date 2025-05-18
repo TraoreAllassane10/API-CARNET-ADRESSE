@@ -10,6 +10,9 @@ const contactShema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User'
     }
+},
+{
+    timestamps: true
 });
 
 module.exports = mongoose.model('Contact', contactShema);

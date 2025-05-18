@@ -6,7 +6,7 @@ const PrivateKey = require("../auth");
 const register = async (req, res) => {
   let { name, email, password } = req.body;
 
-  const verifiedEmail = await User.find({ email });
+  const verifiedEmail = await User.findOne({ email });
 
   if (verifiedEmail) {
     res.json({ message: "Cet utilisateur existe déjà" });

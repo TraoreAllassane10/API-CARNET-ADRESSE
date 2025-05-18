@@ -14,9 +14,22 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   const userId = req.user.id;
 
-  const contacts = await Contact.find({ user: userId });
+  //Pagination
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 2;
+  const skip = (page - 1) * limit;
 
-  res.status(200).send(contacts);
+  try {
+    const contacts = await Contact.find({ user: userId })
+      .skip(skip)
+      .limit(limit);
+
+    const totalContact = await Contact.countDocuments({ user: userId });
+    const totalPages = Math.ceil(totalContact/limit);
+
+    res.status(200).json({ totalContact, totalPages, page, contacts });
+
+  } catch (error) {}
 };
 
 const getById = async (req, res) => {
@@ -61,7 +74,6 @@ const deleteById = async (req, res) => {
   const contact = await Contact.findByIdAndDelete(idContact);
 
   if (contact) {
-
     if (contact.user?.toString() !== req.user.id) {
       return res
         .status(403)
@@ -69,9 +81,8 @@ const deleteById = async (req, res) => {
     }
 
     res.status(200).send(contact);
-
   } else {
-    res.status(404).json({message: "Contact introuvable"});
+    res.status(404).json({ message: "Contact introuvable" });
   }
 };
 
