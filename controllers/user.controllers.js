@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
-const PrivateKey = require('../auth');
+const jwt = require("jsonwebtoken");
+const PrivateKey = require("../auth");
 
 const register = async (req, res) => {
   let { name, email, password } = req.body;
@@ -29,27 +29,29 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    let { email, password } = req.body;
+  let { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+  const user = await User.findOne({ email });
 
-    if(!user)
-    {
-        res.status(404).json({ message: "Vous n'avez de compte"});
-        return ;
-    }
+  if (!user) {
+    res.status(404).json({ message: "Vous n'avez de compte" });
+    return;
+  }
 
-    const validated = bcrypt.compareSync(password, user.password);
+  const validated = bcrypt.compareSync(password, user.password);
 
-    if (validated)
-    {
-        const token = jwt.sign({userId: user._id}, PrivateKey, {expiresIn: '24h'})
-        res.status(200).json({ message: "Utilisateur connecté", data: user, token });
-    }
-    else
-    {
-        res.status(401).json({ message: "Mot de passe incorrect"});
-    }
+  if (validated) {
+    const token = jwt.sign(
+      { id: user._id, name: user.name, email: user.email },
+      PrivateKey,
+      { expiresIn: "24h" }
+    );
+    res
+      .status(200)
+      .json({ message: "Utilisateur connecté", data: user, token });
+  } else {
+    res.status(401).json({ message: "Mot de passe incorrect" });
+  }
 };
 
 module.exports = { register, login };
