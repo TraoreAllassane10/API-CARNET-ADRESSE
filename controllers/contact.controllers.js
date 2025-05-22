@@ -21,6 +21,7 @@ const getAll = async (req, res) => {
 
   try {
     const contacts = await Contact.find({ user: userId })
+      .populate('user')
       .skip(skip)
       .limit(limit);
 

@@ -42,7 +42,7 @@ const login = async (req, res) => {
 
   if (validated) {
     const token = jwt.sign(
-      { id: user._id, name: user.name, email: user.email },
+      { id: user._id, name: user.name, email: user.email, admin: user.admin },
       PrivateKey,
       { expiresIn: "24h" }
     );
