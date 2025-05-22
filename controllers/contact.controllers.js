@@ -8,7 +8,7 @@ const create = async (req, res) => {
 
   const contact = await Contact.create(data);
 
-  res.send(contact);
+  res.status(201).send(contact);
 };
 
 const getAll = async (req, res) => {

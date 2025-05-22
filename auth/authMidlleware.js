@@ -8,7 +8,7 @@ const authMidlleware = (req, res, next) => {
 
   if (!token) {
     return res
-      .status(401)
+      .status(403)
       .json({ message: "Accès non autorisé. Token maquant" });
   }
 
