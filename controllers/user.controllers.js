@@ -2,18 +2,18 @@ const userServices = require("../services/user.services")
 
 const register = async (req, res) => {
 
-  let { name, email, password } = req.body;
+  const data = req.body;
 
-  const response = await userServices.create({name, email, password});
+  const response = await userServices.create(data);
 
-  res.json(response)
+  res.json(response);
 
 };
 
 const login = async (req, res) => {
-  let { email, password } = req.body;
+  const data = req.body;
 
-  const {code, response} = await userServices.login({email, password});
+  const {code, response} = await userServices.login(data);
 
   res.status(code).json(response);
 
