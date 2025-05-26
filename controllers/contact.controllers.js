@@ -1,90 +1,55 @@
-const { default: mongoose } = require("mongoose");
 const Contact = require("../models/Contact");
+const contactServices = require("../services/contact.services")
 
 const create = async (req, res) => {
   const userId = req.user.id;
-
   const data = { ...req.body, user: userId };
 
-  const contact = await Contact.create(data);
+  const {code, response} = await contactServices.create(data);
 
-  res.status(201).send(contact);
+  res.status(code).json(response);
 };
 
 const getAll = async (req, res) => {
+
   const userId = req.user.id;
+  const query = req.query;
 
-  //Pagination
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 2;
-  const skip = (page - 1) * limit;
+  const {code, response} = await contactServices.all(query, userId);
 
-  try {
-    const contacts = await Contact.find({ user: userId })
-      .populate('user')
-      .skip(skip)
-      .limit(limit);
+  res.status(code).json(response);
 
-    const totalContact = await Contact.countDocuments({ user: userId });
-    const totalPages = Math.ceil(totalContact/limit);
-
-    res.status(200).json({ totalContact, totalPages, page, contacts });
-
-  } catch (error) {}
 };
 
 const getById = async (req, res) => {
   const idContact = req.params.id;
-  const contact = await Contact.findById(idContact);
+  const userId = req.user.id;
 
-  if (contact) {
-    if (contact.user?.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "Vous n'etes pas authorisé à acceder à ce contact" });
-    }
+  const {code, response} = await contactServices.find(idContact, userId);
 
-    res.status(200).send(contact);
-  } else {
-    res.status(404).send("Contact introuvable");
-  }
+  res.status(code).send(response);
+
 };
 
 const updateById = async (req, res) => {
   const idContact = req.params.id;
-  const contact = await Contact.findByIdAndUpdate(idContact, req.body, {
-    new: true,
-  });
+  const userId = req.user.id;
+  const data = req.body;
 
-  if (contact) {
-    if (contact.user?.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "Vous n'etes pas authorisé à acceder à ce contact" });
-    }
+  const {code, response} = await contactServices.update(idContact, userId, data);
 
-    res.status(200).send(contact);
-  } else {
-    res.status(404).send("Contact introuvable");
-  }
+  res.status(code).send(response);
+ 
 };
 
 const deleteById = async (req, res) => {
   const idContact = req.params.id;
+  const userId = req.user.id;
 
-  const contact = await Contact.findByIdAndDelete(idContact);
+  const {code, response} = await contactServices.remove(idContact, userId);
 
-  if (contact) {
-    if (contact.user?.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "Vous n'etes pas authorisé à acceder à ce contact" });
-    }
+  res.status(code).send(response);
 
-    res.status(200).send(contact);
-  } else {
-    res.status(404).json({ message: "Contact introuvable" });
-  }
 };
 
 module.exports = {
